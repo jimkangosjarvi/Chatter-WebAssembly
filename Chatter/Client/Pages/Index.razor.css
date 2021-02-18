@@ -1,0 +1,210 @@
+﻿.container {
+    width: 75%;
+    margin: 0 auto;
+}
+
+.msg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: hidden;
+}
+
+    .msg .bubble {
+        float: left;
+        max-width: 75%;
+        width: auto;
+        height: auto;
+        display: block;
+        background: #ebebeb;
+        border-radius: 5px;
+        position: relative;
+        margin: 10px 0 3px 25px;
+        box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+    }
+
+        .msg .bubble.alt {
+            margin: 10px 25px 3px 0px;
+            background: #DCF8C6;
+            float: right;
+        }
+
+        .msg .bubble.follow {
+            margin: 2px 0 3px 25px;
+        }
+
+        .msg .bubble.altfollow {
+            margin: 2px 25px 3px 0px;
+            background: #DCF8C6;
+            float: right;
+        }
+
+        .msg .bubble .txt {
+            padding: 8px 0 8px 0;
+            width: 100%;
+        }
+
+            .msg .bubble .txt .name {
+                font-weight: 600;
+                font-size: 14px;
+                display: inline-table;
+                padding: 0 0 0 15px;
+                margin: 0 0 4px 0;
+                color: #3498db;
+            }
+
+                .msg .bubble .txt .name span {
+                    font-weight: normal;
+                    color: #b3b3b3;
+                    overflow: hidden;
+                }
+
+                .msg .bubble .txt .name.alt {
+                    color: #2ecc51;
+                }
+
+            .msg .bubble .txt .message {
+                font-size: 14px;
+                font-weight: 500;
+                padding: 0 15px 0 15px;
+                margin: auto;
+                color: #2b2b2b;
+                display: table;
+            }
+
+            .msg .bubble .txt .timestamp {
+                font-size: 11px;
+                margin: auto;
+                padding: 0 15px 0 0;
+                display: table;
+                float: right;
+                position: relative;
+                text-transform: uppercase;
+                color: #999;
+            }
+
+        .msg .bubble .bubble-arrow {
+            position: absolute;
+            float: left;
+            left: -11px;
+            top: 0px;
+        }
+
+            .msg .bubble .bubble-arrow.alt {
+                bottom: 20px;
+                left: auto;
+                right: 4px;
+                float: right;
+            }
+
+            .msg .bubble .bubble-arrow:after {
+                content: "";
+                position: absolute;
+                border-top: 15px solid #ebebeb;
+                border-left: 15px solid transparent;
+                border-radius: 4px 0 0 0px;
+                width: 0;
+                height: 0;
+            }
+
+            .msg .bubble .bubble-arrow.alt:after {
+                border-top: 15px solid #DCF8C6;
+                transform: scaleX(-1);
+            }
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+/* Style the header */
+.header {
+    background-color: #f1f1f1;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+}
+
+    /* Style the topnav links */
+    .topnav a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+        /* Change color on hover */
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+/* Create three unequal columns that floats next to each other */
+.column {
+    float: left;
+    padding: 10px;
+}
+
+    /* Left and right column */
+    .column.side {
+        width: 25%;
+    }
+
+    /* Middle column */
+    .column.middle {
+        width: 50%;
+    }
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column.side, .column.middle {
+        width: 100%;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .timestamp {
+        display: none;
+        color: red;
+    }
+}
+
+#menu {
+    list-style: none;
+}
+
+    #menu li {
+        display: inline;
+        padding: 0 10px;
+        border-left: solid 1px black;
+    }
+
+        #menu li:first-child {
+            border-left: none;
+        }
+
+body {
+    /*I ripped this image from the WhatsApp apk*/
+    /*This is WhatsApp's official BK color*/
+    background: #ECE5DD;
+    font-family: "Helvetica Neue", Helvetica;
+}

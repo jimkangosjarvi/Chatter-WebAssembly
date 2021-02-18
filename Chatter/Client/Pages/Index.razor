@@ -1,0 +1,92 @@
+﻿@page "/"
+
+@attribute [Authorize]
+
+<div class="topnav">
+    <p>
+        <input type="text" @ref="refChatBox" @bind-value="inputModel.Message" size="50" /><select @bind="inputModel.Recipent">
+
+            <option value="Room">Room</option>
+            @foreach (var user in users)
+            {
+                if (user.Username != username)
+                {
+                    <option value=@user.Username>@user.Username</option>
+                }
+
+
+            }
+        </select><button class="btn btn-primary" @onclick="@(e => Send())">Send</button>
+    </p>
+</div>
+
+<div class="row">
+    <div class="column side">
+        <h2>Rooms (@inputModel.CurrentRoom)</h2>
+        <select @bind="inputModel.Room">
+
+            @foreach (var room in rooms)
+            {
+                <option value=@room.Name>@room.Name</option>
+
+            }
+        </select>
+        <p><button class="btn btn-primary" @onclick="@(e => JoinRoom())">Join Room</button></p>
+        <p><input type="text" @ref="myref" @bind-value="inputModel.NewRoom" size="10" /><button class="btn btn-primary" @onclick="@(e => CreateRoom())">Create Room</button></p>
+
+        <p><button class="btn btn-primary" @onclick="@(e => DeleteRoom())">Delete current room</button></p>
+
+    </div>
+
+    <div class="column middle">
+        <h2>The Chatter</h2>
+        <div class="container">
+
+
+            @foreach (var item in messages)
+            {
+                if (item.FromUser == username)
+                {
+                    <!-- With Name and Arrow - LEFT -->
+                    <div class="msg">
+                        <div class="bubble">
+                            <div class="txt">
+                                <span class="name">@item.FromUser</span>
+                                <span class="timestamp">@item.Timestamp</span>
+                                <span class="message">
+                                    @item.Content
+                                </span>
+
+                            </div>
+                            <div class="bubble-arrow"></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="msg">
+                        <div class="bubble alt">
+                            <div class="txt">
+                                <span class="name alt">@item.FromUser </span>
+                                <span class="timestamp">@item.Timestamp</span>
+                                <p class="message">@item.Content</p>
+                            </div>
+                            <div class="bubble-arrow alt"></div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+
+    <div class="column side">
+        <h2>Users</h2>
+        @foreach (var user in users)
+        {
+            <p>@user.Username</p>
+        }
+    </div>
+</div>
+
+
