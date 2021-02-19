@@ -32,16 +32,10 @@
     }
 
 @media (max-width: 640.98px) {
-    .top-row:not(.auth) {
-        display: none;
-    }
-
-    .top-row.auth {
-        justify-content: space-between;
-    }
-
-    .top-row a, .top-row .btn-link {
-        margin-left: 0;
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
     }
 }
 
