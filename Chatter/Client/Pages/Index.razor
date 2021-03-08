@@ -2,91 +2,125 @@
 
 @attribute [Authorize]
 
-<div class="topnav">
-    <p>
-        <input type="text" @ref="refChatBox" @bind-value="inputModel.Message" size="50" /><select @bind="inputModel.Recipent">
-
-            <option value="Room">Room</option>
-            @foreach (var user in users)
-            {
-                if (user.Username != username)
-                {
-                    <option value=@user.Username>@user.Username</option>
-                }
-
-
-            }
-        </select><button class="btn btn-primary" @onclick="@(e => Send())">Send</button>
-    </p>
+<div class="alert alert-warning alert-dismissible d-none" id="errorAlert" role="alert">
+    <span data-bind="text:serverInfoMessage"></span>
+    <button type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
-<div class="row">
-    <div class="column side">
-        <h2>Rooms (@inputModel.CurrentRoom)</h2>
-        <select @bind="inputModel.Room">
-
-            @foreach (var room in rooms)
-            {
-                <option value=@room.Name>@room.Name</option>
-
-            }
-        </select>
-        <p><button class="btn btn-primary" @onclick="@(e => JoinRoom())">Join Room</button></p>
-        <p><input type="text" @ref="myref" @bind-value="inputModel.NewRoom" size="10" /><button class="btn btn-primary" @onclick="@(e => CreateRoom())">Create Room</button></p>
-
-        <p><button class="btn btn-primary" @onclick="@(e => DeleteRoom())">Delete current room</button></p>
-
-    </div>
-
-    <div class="column middle">
-        <h2>The Chatter</h2>
-        <div class="container">
-
-
-            @foreach (var item in messages)
-            {
-                if (item.FromUser == username)
-                {
-                    <!-- With Name and Arrow - LEFT -->
-                    <div class="msg">
-                        <div class="bubble">
-                            <div class="txt">
-                                <span class="name">@item.FromUser</span>
-                                <span class="timestamp">@item.Timestamp</span>
-                                <span class="message">
-                                    @item.Content
-                                </span>
-
-                            </div>
-                            <div class="bubble-arrow"></div>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="msg">
-                        <div class="bubble alt">
-                            <div class="txt">
-                                <span class="name alt">@item.FromUser </span>
-                                <span class="timestamp">@item.Timestamp</span>
-                                <p class="message">@item.Content</p>
-                            </div>
-                            <div class="bubble-arrow alt"></div>
-                        </div>
-                    </div>
-                }
-            }
+<div class="app">
+    <div class="sidebar">
+        <div class="header">
+            <h5>Chat Rooms</h5>
+            <a href="#" id="create-room" data-toggle="modal" data-target="#create-room-modal">
+                <i class="fas fa-plus"></i>
+            </a>
         </div>
-
+        <ul class="rooms list-unstyled" id="room-list" data-bind="foreach: chatRooms">
+            <li><a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a></li>
+        </ul>
+        <div class="profile">
+            <div>
+                <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + myAvatar() }" />
+                <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
+            </div>
+          
+                <button type="submit" @onclick="Logout" class="btn-sign-out"><i class="fas fa-sign-out-alt"></i></button>
+        
+        </div>
     </div>
-
-    <div class="column side">
-        <h2>Users</h2>
-        @foreach (var user in users)
-        {
-            <p>@user.Username</p>
-        }
+    <div class="main-content" data-bind="visible: joinedRoom().length > 0">
+        <div class="header">
+            <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#remove-room-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-body">
+            <ul class="list-unstyled" data-bind="foreach: chatMessages">
+                <li>
+                    <div class="chat-message d-flex" data-bind="css: $data.isMine() === true ? 'ismine' : 'isother'">
+                        <div class="left-side">
+                            <img src="/images/icons/avatar1.png" class="message-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
+                        </div>
+                        <div class="message-content d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <span class="author" data-bind="text:$data.from"></span>
+                                <span class="timestamp">
+                                    <i class="far fa-clock"></i>
+                                    <span data-bind="text:$data.timestamp"></span>
+                                </span>
+                            </div>
+                            <span class="content" data-bind="html:$data.content"></span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="chat-input">
+            <input id="chat-message" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
+            <div class="actions d-flex align-items-center">
+                <form method="post" asp-action="Upload" asp-controller="Upload" enctype="multipart/form-data" id="uploadForm">
+                    <label for="UploadedFile" class="custom-file-upload">
+                        <i class="far fa-image"></i>
+                    </label>
+                    <input type="hidden" name="RoomId" data-bind="value: joinedRoomId()" />
+                    <input type="file" id="UploadedFile" name="File" accept=".jpg,.jpeg,.png" data-bind="event: {change: uploadFiles}">
+                </form>
+                <a id="emojibtn" href="#">
+                    <i class="far fa-smile"></i>
+                </a>
+                <i class="fas fa-paper-plane" id="btn-send-message" data-bind="click: sendNewMessage"></i>
+            </div>
+            <div class="emoticon-container d-none" id="emojis-container">
+                <a href="#">
+                    <input type="hidden" value=":)" />
+                    <img src="/images/emojis/emoji1.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":P" />
+                    <img src="/images/emojis/emoji2.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":O" />
+                    <img src="/images/emojis/emoji3.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":-)" />
+                    <img src="/images/emojis/emoji4.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="B|" />
+                    <img src="/images/emojis/emoji5.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":D" />
+                    <img src="/images/emojis/emoji6.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="<3" />
+                    <img src="/images/emojis/emoji7.png" />
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="users-container">
+        <div class="header">
+            <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
+        </div>
+        <ul id="users-list" class="list-unstyled" data-bind="foreach: filteredChatUsers">
+            <li>
+                <div class="user">
+                    <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
+                    <div class="right-side">
+                        <input type="hidden" class="username" data-bind="value: $data.userName" />
+                        <span class="author" data-bind="text: $data.displayName"></span>
+                        <small data-bind="text: $data.device"></small>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <input type="text" class="" placeholder="Search someone..." data-bind="value: filter, valueUpdate: 'afterkeydown'" />
     </div>
 </div>
-
-

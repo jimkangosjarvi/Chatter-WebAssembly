@@ -128,6 +128,10 @@ namespace Chatter.Client.Pages
                 //  this.StateHasChanged();
             }
         }
+        private void Logout()
+        {
+            NavigationManager.NavigateTo("Logout");
+        }
         private async void DeleteRoom()
         {
             try
