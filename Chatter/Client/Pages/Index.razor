@@ -17,8 +17,10 @@
                 <i class="fas fa-plus"></i>
             </a>
         </div>
-        <ul class="rooms list-unstyled" id="room-list" data-bind="foreach: chatRooms">
-            <li><a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a></li>
+        <ul class="rooms list-unstyled" id="room-list">
+            @foreach (var room in rooms) {
+                <li><a href="#" @onclick="@(() => JoinRoom(@room.Name))" @onclick:preventDefault>@room.Name</a></li>
+            }
         </ul>
         <div class="profile">
             <div>
@@ -109,17 +111,19 @@
         <div class="header">
             <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
         </div>
-        <ul id="users-list" class="list-unstyled" data-bind="foreach: filteredChatUsers">
+        <ul id="users-list" class="list-unstyled">
+            @foreach(var user in users) {
             <li>
                 <div class="user">
                     <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
                     <div class="right-side">
                         <input type="hidden" class="username" data-bind="value: $data.userName" />
-                        <span class="author" data-bind="text: $data.displayName"></span>
+                        <span class="author">@user.Username</span>
                         <small data-bind="text: $data.device"></small>
                     </div>
                 </div>
             </li>
+            }
         </ul>
         <input type="text" class="" placeholder="Search someone..." data-bind="value: filter, valueUpdate: 'afterkeydown'" />
     </div>

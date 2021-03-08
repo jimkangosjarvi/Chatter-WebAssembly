@@ -97,12 +97,11 @@ namespace Chatter.Client.Pages
                 });
                 hubConnection.On<string>("onRoomDeleted", async (message) =>
                 {
-                    inputModel.Room = "Lobby";
                     MessageViewModel msg = new MessageViewModel();
                     msg.Content = $"Room was deleted, you are now moved back to {inputModel.Room}";
 
                     messages.Insert(0, msg);
-                    await JoinRoom();
+                    await JoinRoom("Lobby");
                     StateHasChanged();
                 });
 
@@ -113,7 +112,7 @@ namespace Chatter.Client.Pages
                 inputModel.Recipent = "Room";
                 rooms = await hubConnection.InvokeAsync<IList<RoomViewModel>>("GetRooms");
 
-                await JoinRoom();
+                await JoinRoom("Lobby");
 
 
             }
@@ -171,12 +170,12 @@ namespace Chatter.Client.Pages
             }
         }
 
-        private async Task JoinRoom()
+        private async Task JoinRoom(string room)
         {
             try
             {
-                await hubConnection.InvokeAsync("Join", inputModel.Room);
-                users = await hubConnection.InvokeAsync<IList<UserViewModel>>("GetUsers", inputModel.Room);
+                await hubConnection.InvokeAsync("Join", room);
+                users = await hubConnection.InvokeAsync<IList<UserViewModel>>("GetUsers", room);
 
             }
             catch (Exception ex)
